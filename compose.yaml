@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: example-db
+      MYSQL_USER: user-docker
+      MYSQL_PASSWORD: weak-password
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "4406:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init-scripts:/docker-entrypoint-initdb.d
+
+  ConfigBag-a:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ConfigBag-container
+    depends_on:
+      - mysql
+    ports:
+      - "5000:5000"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=example-db;User=user-docker;Password=weak-password;
+      - ASPNETCORE_URLS=http://+:5000
+
+volumes:
+  mysql-data:
