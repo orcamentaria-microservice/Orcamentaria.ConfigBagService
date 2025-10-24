@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using MongoDB.Driver;
 using Orcamentaria.ConfigBagService.Application.Services;
 using Orcamentaria.ConfigBagService.Domain.Repositories;
 using Orcamentaria.ConfigBagService.Domain.Services;
@@ -18,10 +19,16 @@ namespace Orcamentaria.ConfigBagService.API
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            Configuration = new Infrastructure.Initializers.ConfigurationBagInitializer(_serviceName)
+                .InitializeAsync(Configuration)
+                .GetAwaiter()
+                .GetResult();
+
+            services.Replace(ServiceDescriptor.Singleton(Configuration));
 
             CommonDI.AddServiceRegistryHosted(services, Configuration);
             

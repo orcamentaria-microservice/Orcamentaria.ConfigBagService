@@ -1,4 +1,5 @@
 ﻿using Orcamentaria.ConfigBagService.Domain.DTOs.ConfigurationBag;
+using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.Lib.Domain.Models;
 
 namespace Orcamentaria.ConfigBagService.Domain.Services

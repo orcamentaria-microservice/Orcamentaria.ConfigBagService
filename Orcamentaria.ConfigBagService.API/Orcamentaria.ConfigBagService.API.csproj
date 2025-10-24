@@ -5,21 +5,23 @@
 	  <ImplicitUsings>enable</ImplicitUsings>
 	  <InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
-	
 	<ItemGroup>
-	  <None Remove="Keys\public_key_user.pem" />
+	  <None Remove="Keys\public_key_service.pem" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Keys\public_key_service.pem">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Keys\public_key_user.pem">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Orcamentaria.Lib.Application" Version="*" />
-	  <PackageReference Include="Orcamentaria.Lib.Domain" Version="*" />
-	  <PackageReference Include="Orcamentaria.Lib.Infrastructure" Version="*" />
+	  <PackageReference Include="Orcamentaria.Lib.Application" Version="1.7.9" />
+	  <PackageReference Include="Orcamentaria.Lib.Domain" Version="9.5.9" />
+	  <PackageReference Include="Orcamentaria.Lib.Infrastructure" Version="4.7.2" />
 	</ItemGroup>
 
   <ItemGroup>

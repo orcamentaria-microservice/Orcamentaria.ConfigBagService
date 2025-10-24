@@ -4,6 +4,7 @@ using Orcamentaria.ConfigBagService.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.ConfigBagService.Domain.Models;
 using Orcamentaria.ConfigBagService.Domain.Repositories;
 using Orcamentaria.ConfigBagService.Domain.Services;
+using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
 

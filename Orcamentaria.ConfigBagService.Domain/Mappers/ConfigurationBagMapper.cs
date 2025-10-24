@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using Orcamentaria.ConfigBagService.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.ConfigBagService.Domain.Models;
+using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
 
 namespace Orcamentaria.PersonService.Domain.Mappers
 {

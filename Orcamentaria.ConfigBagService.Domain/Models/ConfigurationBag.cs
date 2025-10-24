@@ -1,6 +1,4 @@
 ﻿using MongoDB.Bson;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Orcamentaria.ConfigBagService.Domain.Models
 {
