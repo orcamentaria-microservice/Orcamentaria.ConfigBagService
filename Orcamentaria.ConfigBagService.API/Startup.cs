@@ -1,12 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Driver;
 using Orcamentaria.ConfigBagService.Application.Services;
+using Orcamentaria.ConfigBagService.Domain.Mappers;
 using Orcamentaria.ConfigBagService.Domain.Repositories;
 using Orcamentaria.ConfigBagService.Domain.Services;
 using Orcamentaria.ConfigBagService.Infrastructure.Contexts;
+using Orcamentaria.ConfigBagService.Infrastructure.Initializers;
 using Orcamentaria.ConfigBagService.Infrastructure.Repositories;
 using Orcamentaria.Lib.Infrastructure;
-using Orcamentaria.PersonService.Domain.Mappers;
 
 namespace Orcamentaria.ConfigBagService.API
 {
@@ -23,16 +25,16 @@ namespace Orcamentaria.ConfigBagService.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Configuration = new Infrastructure.Initializers.ConfigurationBagInitializer(_serviceName)
+            Configuration = new ConfigurationBagInitializer(_serviceName)
                 .InitializeAsync(Configuration)
                 .GetAwaiter()
                 .GetResult();
 
-            services.Replace(ServiceDescriptor.Singleton(Configuration));
+            services.Replace(ServiceDescriptor.Singleton<IConfiguration>(Configuration));
 
             CommonDI.AddServiceRegistryHosted(services, Configuration);
-            
-            CommonDI.ResolveCommonServices(_serviceName, _apiVersion, services, Configuration, () =>
+
+            Configuration = CommonDI.ResolveCommonServices(_serviceName, _apiVersion, services, Configuration, () =>
             {
                 services.AddScoped<IMongoClient>(_ => new MongoClient(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -48,7 +50,6 @@ namespace Orcamentaria.ConfigBagService.API
 				//Services
                 services.AddScoped<IConfiguirationBagService, ConfigurationBagService>();
             });
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

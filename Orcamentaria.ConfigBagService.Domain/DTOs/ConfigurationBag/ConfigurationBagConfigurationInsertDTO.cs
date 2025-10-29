@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Orcamentaria.ConfigBagService.Domain.DTOs.ConfigurationBag
 {

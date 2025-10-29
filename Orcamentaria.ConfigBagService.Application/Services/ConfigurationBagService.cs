@@ -7,6 +7,9 @@ using Orcamentaria.ConfigBagService.Domain.Services;
 using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Logs;
+using Orcamentaria.Lib.Domain.Services;
+using System.Text.Json;
 
 namespace Orcamentaria.ConfigBagService.Application.Services
 {
@@ -14,13 +17,16 @@ namespace Orcamentaria.ConfigBagService.Application.Services
     {
         private readonly IConfiguirationBagRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IPublishMessageBrokerService _publishMessageBrokerService;
 
         public ConfigurationBagService(
             IConfiguirationBagRepository repository, 
-            IMapper mapper)
+            IMapper mapper,
+            IPublishMessageBrokerService publishMessageBrokerService)
         {
             _repository = repository;
             _mapper = mapper;
+            _publishMessageBrokerService = publishMessageBrokerService;
         }
 
         public async Task<Response<ConfigurationBagResponseDTO>> GetConfiguirationBagByServiceName(string serviceName)
@@ -121,6 +127,47 @@ namespace Orcamentaria.ConfigBagService.Application.Services
                 data.UpdateAt = DateTime.Now;
 
                 await _repository.Save(data);
+
+                return new Response<ConfigurationBagResponseDTO>(_mapper.Map<ConfigurationBagResponseDTO>(data));
+            }
+            catch (DefaultException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
+
+        public async Task<Response<ConfigurationBagResponseDTO>> SaveRealTimeConfiguration(ConfigurationBagRealTimeConfigurationInsertDTO dto)
+        {
+            try
+            {
+                var data = await _repository.GetConfiguirationBagByServiceName(dto.ServiceName);
+
+                if (data is null)
+                {
+                    data = new ConfigurationBag()
+                    {
+                        _id = ObjectId.GenerateNewId(),
+                        ServiceName = dto.ServiceName,
+                    };
+                }
+
+                data.RealTimeConfigurations = dto.RealTimeConfigurations;
+                data.UpdateAt = DateTime.Now;
+
+                await _repository.Save(data);
+
+                var message = JsonSerializer.Serialize(dto.RealTimeConfigurations);
+
+                _publishMessageBrokerService.SendMessageToTopicExchange(
+                    message: message,
+                    exchange: "realTimeConfiguration",
+                    routingKey: $"realTimeConfiguration.{dto.ServiceName}",
+                    binds: [dto.ServiceName]
+                );
 
                 return new Response<ConfigurationBagResponseDTO>(_mapper.Map<ConfigurationBagResponseDTO>(data));
             }

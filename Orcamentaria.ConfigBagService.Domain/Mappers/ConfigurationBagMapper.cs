@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using MongoDB.Bson;
-using Orcamentaria.ConfigBagService.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.ConfigBagService.Domain.Models;
 using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
 
-namespace Orcamentaria.PersonService.Domain.Mappers
+namespace Orcamentaria.ConfigBagService.Domain.Mappers
 {
     public class ConfigurationBagMapper : Profile
     {
@@ -15,6 +14,7 @@ namespace Orcamentaria.PersonService.Domain.Mappers
                 .ForMember(s => s.UpdateAt, opt => opt.MapFrom(d => d.UpdateAt))
                 .ForMember(s => s.ConnectionStrings, opt => opt.MapFrom(d => d.ConnectionStrings))
                 .ForMember(s => s.Configurations, opt => opt.MapFrom(d => ConvertDictionaryList(d.Configurations)))
+                .ForMember(s => s.RealTimeConfigurations, opt => opt.MapFrom(d => d.RealTimeConfigurations))
                 .ReverseMap();
         }
 

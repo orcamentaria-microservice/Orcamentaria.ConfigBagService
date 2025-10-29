@@ -9,5 +9,6 @@ namespace Orcamentaria.ConfigBagService.Domain.Models
         public DateTime UpdateAt { get; set; }
         public IEnumerable<Dictionary<string, string>> ConnectionStrings { get; set; } = [];
         public IEnumerable<Dictionary<string, BsonDocument>> Configurations { get; set; }
+        public IEnumerable<Dictionary<string, string>> RealTimeConfigurations { get; set; }
     }
 }

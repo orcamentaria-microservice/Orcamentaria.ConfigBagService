@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using MongoDB.Bson;
+﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
-using Orcamentaria.ConfigBagService.Domain.Models;
+using Orcamentaria.ConfigBagService.Application.Services;
 using Orcamentaria.ConfigBagService.Infrastructure.Contexts;
 using Orcamentaria.ConfigBagService.Infrastructure.Repositories;
+using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.Lib.Domain.Exceptions;
-using Orcamentaria.Lib.Domain.Models.Exceptions;
-using System.Text.Json;
 
 namespace Orcamentaria.ConfigBagService.Infrastructure.Initializers
 {
@@ -23,23 +22,25 @@ namespace Orcamentaria.ConfigBagService.Infrastructure.Initializers
         {
             try
             {
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
-
-                if(string.IsNullOrWhiteSpace(connectionString))
-                    throw new ConfigurationException($"A connection string não foi configurada no serviço {_serviceName}.");
-
-                var mongoClient = new MongoClient(connectionString);
-
+                var mongoClient = new MongoClient(configuration.GetConnectionString("DefaultConnection"));
                 var dbContext = new MongoContext(mongoClient);
+                var respository = new ConfigurationBagRepository(dbContext);
 
-                var repository = new ConfigurationBagRepository(dbContext);
+                var mapper = new Mapper(new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile(new Domain.Mappers.ConfigurationBagMapper());
+                }));
 
-                var data = await repository.GetConfiguirationBagByServiceName(_serviceName);
+                var service = new ConfigurationBagService(respository, mapper, null);
 
-                if (data is null)
-                    throw new NotFoundException($"Não foi encontrada configuração para o serviço {_serviceName}.");
+                var response = await service.GetConfiguirationBagByServiceName(_serviceName);
 
-                var dict = ToAppsettingsDictionary(data);
+                if (!response.Success)
+                    throw new ConfigurationException($"Erro ao buscar configurações do serviço {_serviceName}");
+
+                var dict = ToEnvsDictionary(response.Data);
+
+                dict["ServiceConfiguration:ServiceName"] = _serviceName.Split(".").Last();
 
                 var newConfig = new ConfigurationBuilder()
                     .AddConfiguration(configuration)
@@ -59,7 +60,7 @@ namespace Orcamentaria.ConfigBagService.Infrastructure.Initializers
         }
 
         #region private methods
-        private static Dictionary<string, string> ToAppsettingsDictionary(ConfigurationBag bag)
+        private static Dictionary<string, string> ToEnvsDictionary(ConfigurationBagResponseDTO bag)
         {
             var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -96,7 +97,7 @@ namespace Orcamentaria.ConfigBagService.Infrastructure.Initializers
 
                     foreach (var (sectionName, sectionValue) in item)
                     {
-                        FlattenObject(dict, (object)sectionValue, sectionName);
+                        FlattenObject(dict, sectionValue, sectionName);
                     }
                 }
             }
@@ -130,16 +131,13 @@ namespace Orcamentaria.ConfigBagService.Infrastructure.Initializers
                     foreach (var (k, v) in dictObj)
                         FlattenObject(bag, v, $"{prefix}:{k}");
                     return;
-                case BsonDocument bson:
-                    var jsonB = bson.ToJson();
-                    var rootEl = JsonDocument.Parse(jsonB).RootElement;
-                    FlattenJsonElement(bag, rootEl, prefix);
-                    return;
+
                 case IEnumerable<object> list:
-                    int j = 0;
+                    int i = 0;
                     foreach (var item in list)
-                        FlattenObject(bag, item, $"{prefix}:{j++}");
+                        FlattenObject(bag, item, $"{prefix}:{i++}");
                     return;
+
                 default:
                     var json = System.Text.Json.JsonSerializer.Serialize(value);
                     var el = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(json);

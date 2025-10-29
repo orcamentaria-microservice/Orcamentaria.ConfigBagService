@@ -10,5 +10,6 @@ namespace Orcamentaria.ConfigBagService.Domain.Services
         Task<Response<IEnumerable<string>>> GetConfiguirationBagServiceName();
         Task<Response<ConfigurationBagResponseDTO>> SaveConnectionString(ConfigurationBagConnectionStringInsertDTO dto);
         Task<Response<ConfigurationBagResponseDTO>> SaveConfiguration(ConfigurationBagConfigurationInsertDTO dto);
+        Task<Response<ConfigurationBagResponseDTO>> SaveRealTimeConfiguration(ConfigurationBagRealTimeConfigurationInsertDTO dto);
     }
 }

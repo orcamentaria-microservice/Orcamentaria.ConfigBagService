@@ -73,5 +73,19 @@ namespace Orcamentaria.ConfigBagService.API.Controllers.v1
                 throw;
             }
         }
+
+        [Authorize(Roles = "MASTER,CONFIGURATION_BAG:INSERT:REALTIMECONFIGURATIONS")]
+        [HttpPost("RealTimeConfigurations", Name = "ConfigurationBagRealTimeConfigurationsInsert")]
+        public async Task<Response<ConfigurationBagResponseDTO>> InsertRealTimeConfigurations([FromBody] ConfigurationBagRealTimeConfigurationInsertDTO dto)
+        {
+            try
+            {
+                return await _service.SaveRealTimeConfiguration(dto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
