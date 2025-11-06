@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
+    <PackageReference Include="Orcamentaria.Lib.Infrastructure" Version="5.1.5" />
   </ItemGroup>
 
   <ItemGroup>

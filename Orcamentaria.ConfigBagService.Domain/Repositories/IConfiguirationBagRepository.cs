@@ -1,4 +1,5 @@
 ﻿using Orcamentaria.ConfigBagService.Domain.Models;
+using Orcamentaria.Lib.Domain.Repositories;
 
 namespace Orcamentaria.ConfigBagService.Domain.Repositories
 {

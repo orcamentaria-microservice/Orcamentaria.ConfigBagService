@@ -10,7 +10,8 @@ namespace Orcamentaria.ConfigBagService.Infrastructure.Repositories
     {
         private readonly MongoContext _dbContext;
 
-        public ConfigurationBagRepository(MongoContext dbContext)
+        public ConfigurationBagRepository(
+            MongoContext dbContext)
         {
             _dbContext = dbContext;
         }

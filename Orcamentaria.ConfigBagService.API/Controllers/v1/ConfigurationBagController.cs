@@ -4,6 +4,7 @@ using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.ConfigBagService.Domain.Services;
 using Orcamentaria.ConfigBagService.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
+using Orcamentaria.Lib.Domain.Models.Responses;
 
 namespace Orcamentaria.ConfigBagService.API.Controllers.v1
 {

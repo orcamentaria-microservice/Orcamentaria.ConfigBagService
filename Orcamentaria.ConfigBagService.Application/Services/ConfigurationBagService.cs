@@ -6,8 +6,7 @@ using Orcamentaria.ConfigBagService.Domain.Repositories;
 using Orcamentaria.ConfigBagService.Domain.Services;
 using Orcamentaria.Lib.Domain.DTOs.ConfigurationBag;
 using Orcamentaria.Lib.Domain.Exceptions;
-using Orcamentaria.Lib.Domain.Models;
-using Orcamentaria.Lib.Domain.Models.Logs;
+using Orcamentaria.Lib.Domain.Models.Responses;
 using Orcamentaria.Lib.Domain.Services;
 using System.Text.Json;
 
