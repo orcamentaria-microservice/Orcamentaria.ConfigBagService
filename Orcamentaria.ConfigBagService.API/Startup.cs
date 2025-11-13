@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using Orcamentaria.ConfigBagService.Application.Services;
 using Orcamentaria.ConfigBagService.Domain.Mappers;
 using Orcamentaria.ConfigBagService.Domain.Repositories;
@@ -8,7 +6,7 @@ using Orcamentaria.ConfigBagService.Domain.Services;
 using Orcamentaria.ConfigBagService.Infrastructure.Contexts;
 using Orcamentaria.ConfigBagService.Infrastructure.Initializers;
 using Orcamentaria.ConfigBagService.Infrastructure.Repositories;
-using Orcamentaria.Lib.Infrastructure;
+using Orcamentaria.Lib.Infrastructure.Configures;
 
 namespace Orcamentaria.ConfigBagService.API
 {
@@ -30,18 +28,19 @@ namespace Orcamentaria.ConfigBagService.API
                 .GetAwaiter()
                 .GetResult();
 
-            services.Replace(ServiceDescriptor.Singleton<IConfiguration>(Configuration));
+            services.AddServiceRegistryHosted(Configuration);
 
-            CommonDI.AddServiceRegistryHosted(services, Configuration);
-
-            Configuration = CommonDI.ResolveCommonServices(_serviceName, _apiVersion, services, Configuration, () =>
+            services.ResolveCommonServices(configuration: Configuration,
+                serviceName: _serviceName,
+                apiVersion: _apiVersion,
+                customServices: () =>
             {
                 services.AddScoped<IMongoClient>(_ => new MongoClient(Configuration.GetConnectionString("DefaultConnection")));
 
                 services.AddScoped<MongoContext>();
 
                 //Mappers
-                services.AddAutoMapper(
+                services.AddAutoMapper(_ => { },
                     typeof(ConfigurationBagMapper));
 
                 //Repositories
@@ -53,6 +52,6 @@ namespace Orcamentaria.ConfigBagService.API
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-			=> CommonDI.ConfigureCommon(_serviceName, _apiVersion, app, env);
+			=> app.ConfigureCommon(env, _serviceName, _apiVersion);
     }
 }

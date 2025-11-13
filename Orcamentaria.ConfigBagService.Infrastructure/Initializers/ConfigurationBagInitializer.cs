@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Orcamentaria.ConfigBagService.Application.Services;
 using Orcamentaria.ConfigBagService.Infrastructure.Contexts;
@@ -29,7 +30,7 @@ namespace Orcamentaria.ConfigBagService.Infrastructure.Initializers
                 var mapper = new Mapper(new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile(new Domain.Mappers.ConfigurationBagMapper());
-                }));
+                }, new LoggerFactory()));
 
                 var service = new ConfigurationBagService(respository, mapper, null);
 
