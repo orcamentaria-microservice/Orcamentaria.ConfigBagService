@@ -172,6 +172,20 @@ Demais chaves de configuração do serviço (Service Registry, RabbitMQ, etc.) s
 
 ---
 
+## Configuração local
+
+Nenhum valor real deve existir nos arquivos versionados. Configure via `dotnet user-secrets` ou variáveis de ambiente:
+
+```bash
+dotnet user-secrets init --project Orcamentaria.ConfigBagService.API
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "__SET_BY_ENV__" --project Orcamentaria.ConfigBagService.API
+# substitua __SET_BY_ENV__ pela connection string real do MongoDB Atlas
+```
+
+Ou crie `Orcamentaria.ConfigBagService.API/appsettings.Development.json` (já ignorado pelo `.gitignore`) com os valores locais. Nunca commite esse arquivo.
+
+---
+
 ## ▶️ Como Executar
 
 ### Pré-requisitos
